@@ -1,5 +1,8 @@
 <?php
 
+namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
+
 class DailyActivityEntry extends Model
 {
     protected $fillable = ['activity_id', 'date', 'status', 'expected_value', 'actual_value', 'variance', 'assigned_to'];
