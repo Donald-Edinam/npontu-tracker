@@ -56,3 +56,16 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Deployment / Database
+
+- Local development: this project uses SQLite by default for convenience. The database file is `database/database.sqlite` and the default DB connection is configured via `DB_CONNECTION=sqlite` and `DB_DATABASE` in the project's `.env` file.
+- Portability: prefer a relative `DB_DATABASE=database/database.sqlite` or leaving it unset so Laravel resolves `database_path('database.sqlite')`. Avoid absolute paths unless you control the host filesystem layout.
+- Permissions: ensure the web server user can write to the SQLite file:
+
+```bash
+chown www-data:www-data database/database.sqlite
+chmod 664 database/database.sqlite
+```
+
+- Production: SQLite is not recommended for production or horizontally scaled deployments because it is file-based and does not handle high concurrency well. For production, use a hosted RDBMS (MySQL, MariaDB, or PostgreSQL) and set `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` accordingly.
