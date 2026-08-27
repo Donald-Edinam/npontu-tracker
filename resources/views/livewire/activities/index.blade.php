@@ -73,14 +73,16 @@ $toggleActive = function (int $id) {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
-            <button wire:click="create"
-                    type="button"
-                    class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-xs font-extrabold text-white shadow-md hover:bg-slate-800 transition self-start sm:self-auto">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                </svg>
-                New Activity
-            </button>
+            @role('admin')
+                <button wire:click="create"
+                        type="button"
+                        class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-xs font-extrabold text-white shadow-md hover:bg-slate-800 transition self-start sm:self-auto">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                    New Activity
+                </button>
+            @endrole
         </div>
 
         <!-- Activity Table Bento Card -->
@@ -134,25 +136,40 @@ $toggleActive = function (int $id) {
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <button wire:click="toggleActive({{ $activity->id }})"
-                                            type="button"
-                                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold transition shadow-2xs {{ $activity->is_active ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200' }}">
-                                        <span class="h-2 w-2 rounded-full {{ $activity->is_active ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>
-                                        {{ $activity->is_active ? 'Active' : 'Inactive' }}
-                                    </button>
+                                    @role('admin')
+                                        <button wire:click="toggleActive({{ $activity->id }})"
+                                                type="button"
+                                                class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold transition shadow-2xs {{ $activity->is_active ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200' }}">
+                                            <span class="h-2 w-2 rounded-full {{ $activity->is_active ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>
+                                            {{ $activity->is_active ? 'Active' : 'Inactive' }}
+                                        </button>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-extrabold shadow-2xs {{ $activity->is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500' }}">
+                                            <span class="h-2 w-2 rounded-full {{ $activity->is_active ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>
+                                            {{ $activity->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    @endrole
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <button wire:click="edit({{ $activity->id }})"
-                                            type="button"
-                                            class="rounded-full bg-indigo-50 px-3.5 py-1 text-xs font-extrabold text-indigo-600 hover:bg-indigo-100 transition">
-                                        Edit
-                                    </button>
+                                    @role('admin')
+                                        <button wire:click="edit({{ $activity->id }})"
+                                                type="button"
+                                                class="rounded-full bg-indigo-50 px-3.5 py-1 text-xs font-extrabold text-indigo-600 hover:bg-indigo-100 transition">
+                                            Edit
+                                        </button>
+                                    @else
+                                        <span class="text-gray-400">&mdash;</span>
+                                    @endrole
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-12 text-center text-xs font-medium text-slate-500">
-                                    No activities defined in the catalog yet. Click "+ New Activity" to create one.
+                                    @role('admin')
+                                        No activities defined in the catalog yet. Click "+ New Activity" to create one.
+                                    @else
+                                        No activities defined in the catalog yet.
+                                    @endrole
                                 </td>
                             </tr>
                         @endforelse
@@ -163,6 +180,7 @@ $toggleActive = function (int $id) {
     </div>
 
     <!-- Create/Edit Activity Glassmorphic Modal -->
+    @role('admin')
     @if ($showForm)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-md p-4"
              wire:click.self="closeForm">
@@ -243,4 +261,5 @@ $toggleActive = function (int $id) {
             </div>
         </div>
     @endif
+    @endrole
 </div>
