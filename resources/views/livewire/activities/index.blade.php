@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\StoreActivityRequest;
 use App\Models\Activity;
 use Masmerise\Toaster\Toaster;
 use function Livewire\Volt\{state, computed, layout};
@@ -40,12 +41,7 @@ $closeForm = function () {
 $save = function () {
     $this->authorize($this->editingId ? 'update' : 'create', $this->editingId ? Activity::find($this->editingId) : Activity::class);
 
-    $data = $this->validate([
-        'name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'type' => 'required|in:checklist,metric',
-        'category' => 'nullable|string|max:255',
-    ]);
+    $data = $this->validate(StoreActivityRequest::staticRules());
 
     if ($this->editingId) {
         $activity = Activity::find($this->editingId);
@@ -237,8 +233,11 @@ $toggleActive = function (int $id) {
                     </button>
                     <button type="button"
                             wire:click="save"
-                            class="rounded-full bg-slate-900 px-6 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-slate-800 transition">
-                        Save Activity
+                            wire:loading.attr="disabled"
+                            class="rounded-full bg-slate-900 px-6 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-slate-800 transition flex items-center gap-2">
+                        <span wire:loading wire:target="save" class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></span>
+                        <span wire:loading.remove wire:target="save">Save Activity</span>
+                        <span wire:loading wire:target="save">Saving...</span>
                     </button>
                 </div>
             </div>

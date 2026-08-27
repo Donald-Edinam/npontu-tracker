@@ -30,15 +30,7 @@ $completionsByDay = computed(function () {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2">
-            <div>
-                <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 px-3 py-1 text-[11px] font-extrabold text-indigo-700">
-                    <span class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                    Historical Analytics & Audit Logs
-                </span>
-                <h1 class="mt-2 text-3xl sm:text-4xl font-extrabold text-[#141414] tracking-tight">Activity Reports</h1>
-            </div>
-
-            <!-- Date Range Controls Bento Card -->
+                      <!-- Date Range Controls Bento Card -->
             <div class="rounded-[22px] border-[1.6px] border-white/90 bg-white p-4 shadow-[0_4px_20px_rgba(24,30,45,0.045)] flex flex-wrap items-center gap-3">
                 <div>
                     <label class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1">From</label>

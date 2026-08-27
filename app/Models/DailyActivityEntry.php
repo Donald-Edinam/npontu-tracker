@@ -1,11 +1,16 @@
 <?php
 
 namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DailyActivityEntry extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['activity_id', 'date', 'status', 'expected_value', 'actual_value', 'variance', 'assigned_to'];
+
     protected $casts = ['date' => 'date'];
 
     public function activity()

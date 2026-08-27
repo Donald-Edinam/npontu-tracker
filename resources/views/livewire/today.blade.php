@@ -170,6 +170,9 @@ $save = function (string $status) {
                             <p class="text-sm font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors">
                                 {{ $entry->activity->name }}
                             </p>
+                            @if ($entry->logs->first())
+                                <span class="block text-xs text-slate-400 font-medium">last note: {{ $entry->logs->first()->remark }}</span>
+                            @endif
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
                                     {{ $entry->activity->category ?? 'General' }}
@@ -317,15 +320,37 @@ $save = function (string $status) {
                     </button>
                     <button type="button"
                             wire:click="save('pending')"
-                            class="rounded-full border border-indigo-200 bg-indigo-50 px-5 py-2.5 text-xs font-extrabold text-indigo-700 hover:bg-indigo-100 transition">
-                        Save Note
+                            wire:loading.attr="disabled"
+                            class="rounded-full border border-indigo-200 bg-indigo-50 px-5 py-2.5 text-xs font-extrabold text-indigo-700 hover:bg-indigo-100 transition inline-flex items-center gap-1.5">
+                        <span wire:loading wire:target="save('pending')" class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-indigo-700 border-t-transparent"></span>
+                        <span wire:loading.remove wire:target="save('pending')">Save Note</span>
+                        <span wire:loading wire:target="save('pending')">Saving...</span>
                     </button>
                     <button type="button"
                             wire:click="save('done')"
-                            class="rounded-full bg-emerald-600 px-6 py-2.5 text-xs font-extrabold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition">
-                        Mark Done
+                            wire:loading.attr="disabled"
+                            class="rounded-full bg-emerald-600 px-6 py-2.5 text-xs font-extrabold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 transition inline-flex items-center gap-1.5">
+                        <span wire:loading wire:target="save('done')" class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></span>
+                        <span wire:loading.remove wire:target="save('done')">Mark Done</span>
+                        <span wire:loading wire:target="save('done')">Saving...</span>
                     </button>
                 </div>
+
+                @if ($this->selectedEntry->logs->isNotEmpty())
+                    <div class="mt-4 pt-3 border-t border-slate-100">
+                        <p class="text-xs font-semibold text-slate-500 mb-2">History</p>
+                        <ul class="space-y-1 max-h-40 overflow-y-auto text-xs">
+                            @foreach ($this->selectedEntry->logs as $log)
+                                <li>
+                                    <span class="font-medium">{{ $log->updatedBy->name }}</span>
+                                    {{ $log->old_status }} → {{ $log->new_status }}
+                                    @if ($log->remark) — "{{ $log->remark }}" @endif
+                                    <span class="text-slate-400">({{ $log->created_at->diffForHumans() }})</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             </div>
         </div>
     @endif

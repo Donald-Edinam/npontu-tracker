@@ -1,71 +1,79 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Npontu Daily Activity Tracker
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 11 + Livewire 3 (Volt functional style) web application built for Npontu Technologies to track daily activities, shift handovers, and historical reporting for applications support team members.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Setup & Local Installation
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Follow these steps to set up and run the application locally from scratch:
 
 ```bash
-composer require laravel/boost --dev
+# 1. Clone the repository
+git clone https://github.com/Donald-Edinam/npontu-tracker.git
+cd npontu-tracker
 
-php artisan boost:install
+# 2. Install PHP & Node dependencies
+composer install
+npm install && npm run build
+
+# 3. Environment configuration
+cp .env.example .env
+php artisan key:generate
+
+# 4. Run database migrations and seed default data
+php artisan migrate --seed
+
+# 5. Start local development server
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Access the application at `http://127.0.0.1:8000`.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Demo Credentials
 
-## Code of Conduct
+The database seeder provisions default accounts with pre-assigned Spatie roles and seeded sample activities:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Role | Email | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin@npontu.test` | `password` | Activity Catalog Management (`/activities`), Today's Board (`/today`), Reports (`/reports`) |
+| **Support Agent** | `agent@npontu.test` | `password` | Today's Board (`/today`), Reports (`/reports`), Read-only Catalog (`/activities`) |
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Data Model Rationale
+
+The system architecture utilizes a three-table normalized database split to guarantee audit compliance and efficient shift handovers:
+
+1. **`activities` (Catalog)**: Stores master activity templates (name, description, type, category, active status).
+2. **`daily_activity_entries` (Daily State)**: Stores one row per activity per calendar day holding the current status (`pending` or `done`), expected metrics, actual metrics, and assigned agent.
+3. **`activity_update_logs` (Append-Only Audit Log)**: Immutable audit trail recording every state update, status transition (`old_status` → `new_status`), timestamp, user ID (`updated_by`), and remark/note (`const UPDATED_AT = null;`).
+
+This design separates volatile daily status from append-only activity histories, enabling fast daily status lookups while maintaining a complete, unalterable historical log without requiring auxiliary audit tables.
+
+---
+
+## Explicit Interpretation Calls
+
+1. **Checklist vs. Metric Activity Types**:
+   - To support quantitative operational tasks (e.g., *"Daily SMS count in comparison to SMS count from logs"*), activities are classified as either `checklist` or `metric`. Metric activities prompt support personnel for numeric actual values and automatically compute variance against expected targets.
+2. **Integrated Shift Handover & Timeline View**:
+   - Rather than isolating update histories on a separate page, shift handover notes and complete timeline histories are folded directly into the `/today` board. Support personnel can view the latest note directly on pending cards or inspect the full audit trail inside the update modal.
+3. **Role-Based Access Control on Catalog**:
+   - The Activity Catalog (`/activities`) is read-visible to all authenticated users so support agents understand activity scope, but mutating operations (creating, editing, toggling active state) are strictly authorized for users with the `admin` role via `ActivityPolicy`.
+
+---
+
+## Application Screenshots
+
+- **Today's Activity Board (`/today`)**: Daily tracking dashboard showing pending and completed activities, bento stats cards, and handover note previews.
+- **Update Modal & Shift Handover History**: Interactive dialog for setting status, numeric actual values, remarks, and inspecting prior update history.
+- **Reporting & Audit Analytics (`/reports`)**: Date-filtered historical audit logs and daily completion metrics.
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-## Deployment / Database
-
-- Local development: this project uses SQLite by default for convenience. The database file is `database/database.sqlite` and the default DB connection is configured via `DB_CONNECTION=sqlite` and `DB_DATABASE` in the project's `.env` file.
-- Portability: prefer a relative `DB_DATABASE=database/database.sqlite` or leaving it unset so Laravel resolves `database_path('database.sqlite')`. Avoid absolute paths unless you control the host filesystem layout.
-- Permissions: ensure the web server user can write to the SQLite file:
-
-```bash
-chown www-data:www-data database/database.sqlite
-chmod 664 database/database.sqlite
-```
-
-- Production: SQLite is not recommended for production or horizontally scaled deployments because it is file-based and does not handle high concurrency well. For production, use a hosted RDBMS (MySQL, MariaDB, or PostgreSQL) and set `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` accordingly.
+This project is open-sourced software under the [MIT license](https://opensource.org/licenses/MIT).
