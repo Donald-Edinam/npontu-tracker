@@ -41,6 +41,16 @@ new class extends Component
                        class="px-3.5 py-2 rounded-full text-xs font-bold tracking-tight transition-all flex items-center gap-1.5 {{ request()->routeIs('today') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
                         Today's Activity
                     </a>
+                    <a href="{{ route('activities.index') }}"
+                       wire:navigate
+                       class="px-3.5 py-2 rounded-full text-xs font-bold tracking-tight transition-all flex items-center gap-1.5 {{ request()->routeIs('activities.index') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                        Activity Catalog
+                    </a>
+                    <a href="{{ route('reports') }}"
+                       wire:navigate
+                       class="px-3.5 py-2 rounded-full text-xs font-bold tracking-tight transition-all flex items-center gap-1.5 {{ request()->routeIs('reports') ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
+                        Reports
+                    </a>
                 </div>
             </div>
 
@@ -95,6 +105,12 @@ new class extends Component
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('today')" :active="request()->routeIs('today')" wire:navigate>
                 {{ __('Today\'s Activity') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('activities.index')" :active="request()->routeIs('activities.index')" wire:navigate>
+                {{ __('Activity Catalog') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('reports')" :active="request()->routeIs('reports')" wire:navigate>
+                {{ __('Reports') }}
             </x-responsive-nav-link>
         </div>
 

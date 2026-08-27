@@ -14,12 +14,12 @@ state([
 ]);
 
 $entries = computed(function () {
-    return DailyActivityEntry::with('activity')->whereDate('date', today())->get();
+    return DailyActivityEntry::with(['activity', 'logs'])->whereDate('date', today())->get();
 });
 
 $selectedEntry = computed(function () {
     return $this->selectedEntryId
-        ? DailyActivityEntry::with('activity')->find($this->selectedEntryId)
+        ? DailyActivityEntry::with(['activity', 'logs.updatedBy'])->find($this->selectedEntryId)
         : null;
 });
 
