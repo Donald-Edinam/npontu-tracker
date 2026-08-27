@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
 class ActivityUpdateLog extends Model
 {
     const UPDATED_AT = null; // tells Eloquent this table has no updated_at column
