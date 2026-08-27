@@ -14,7 +14,9 @@
 /.zed
 /auth.json
 /node_modules
-/public/build
+# public/build is committed: the Heroku PHP buildpack used on Koyeb does not run npm,
+# so the Vite manifest must be present in the repo for deployed pages to render.
+#/public/build
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
