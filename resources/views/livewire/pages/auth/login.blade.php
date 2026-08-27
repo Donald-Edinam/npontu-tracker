@@ -63,8 +63,10 @@ new #[Layout('layouts.guest')] class extends Component
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
+            <x-primary-button class="ms-3 gap-1.5" wire:loading.attr="disabled" wire:target="login">
+                <span wire:loading wire:target="login" class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></span>
+                <span wire:loading.remove wire:target="login">{{ __('Log in') }}</span>
+                <span wire:loading wire:target="login">{{ __('Logging in...') }}</span>
             </x-primary-button>
         </div>
     </form>

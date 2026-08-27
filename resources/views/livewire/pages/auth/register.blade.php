@@ -80,8 +80,10 @@ new #[Layout('layouts.guest')] class extends Component
                 {{ __('Already registered?') }}
             </a>
 
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
+            <x-primary-button class="ms-4 gap-1.5" wire:loading.attr="disabled" wire:target="register">
+                <span wire:loading wire:target="register" class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></span>
+                <span wire:loading.remove wire:target="register">{{ __('Register') }}</span>
+                <span wire:loading wire:target="register">{{ __('Registering...') }}</span>
             </x-primary-button>
         </div>
     </form>
