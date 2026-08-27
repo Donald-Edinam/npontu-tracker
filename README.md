@@ -43,6 +43,64 @@ The database seeder provisions default accounts with pre-assigned Spatie roles a
 
 ---
 
+## Deployment Guide (Koyeb, Railway, Render)
+
+This repository includes a pre-configured `Procfile` for seamless cloud deployment on PaaS providers using PHP/Heroku buildpacks or custom container runners.
+
+### Required Production Environment Variables
+
+Regardless of the cloud hosting platform, configure these environment variables in your deployment dashboard:
+
+| Variable | Recommended Value | Notes |
+| :--- | :--- | :--- |
+| `APP_ENV` | `production` | Enables production mode |
+| `APP_DEBUG` | `false` | Disables verbose debug stack traces |
+| `APP_KEY` | `base64:...` | Generate locally via `php artisan key:generate --show` |
+| `APP_URL` | `https://your-app-domain.com` | Your live deployment URL |
+| `DB_CONNECTION` | `sqlite` | Uses SQLite for default storage |
+
+---
+
+### Option 1: Koyeb
+
+1. **Connect Repository**: Create a new Web Service on Koyeb and select this GitHub repository.
+2. **Buildpack & Web Root**: Koyeb automatically detects the root `Procfile`:
+   ```bash
+   web: touch database/database.sqlite && php artisan migrate --force && php artisan db:seed --force && vendor/bin/heroku-php-apache2 public/
+   ```
+   This command ensures the SQLite database file exists, runs migrations, seeds initial admin/agent accounts, and sets `public/` as the document root (preventing `403 Forbidden` errors).
+3. **Environment Variables**: Add `APP_KEY` (generated via `php artisan key:generate --show`), `APP_ENV=production`, `APP_DEBUG=false`, and `APP_URL`.
+4. **Deploy**: Click Deploy. Koyeb will build the app and launch the web instance.
+
+---
+
+### Option 2: Railway
+
+1. **New Project**: Select **Deploy from GitHub repo** on Railway and choose `npontu-tracker`.
+2. **Start Command**: Railway will read `Procfile` automatically. If overriding the start command manually in Railway settings:
+   ```bash
+   touch database/database.sqlite && php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT
+   ```
+3. **Variables**: Set `APP_KEY`, `APP_ENV=production`, `APP_DEBUG=false`, and `APP_URL`.
+
+---
+
+### Option 3: Render
+
+1. **New Web Service**: Connect your GitHub repository on Render.
+2. **Environment**: Select **PHP**.
+3. **Build Command**:
+   ```bash
+   composer install --no-dev --optimize-autoloader && npm install && npm run build
+   ```
+4. **Start Command**:
+   ```bash
+   touch database/database.sqlite && php artisan migrate --force && php artisan db:seed --force && vendor/bin/heroku-php-apache2 public/
+   ```
+5. **Environment Variables**: Add `APP_KEY`, `APP_ENV=production`, `APP_DEBUG=false`, and `APP_URL`.
+
+---
+
 ## Data Model Rationale
 
 The system architecture utilizes a three-table normalized database split to guarantee audit compliance and efficient shift handovers:
